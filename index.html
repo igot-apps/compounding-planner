@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Compounding Trading Planner</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+input {
+    padding: 8px;
+    margin: 5px;
+    width: 120px;
+}
+
+button {
+    padding: 10px 20px;
+    background: #22c55e;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background: #1e293b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>📈 Compounding Planner</h1>
+
+<div>
+    Start Balance: <input id="balance" type="number" value="58">
+    Risk %: <input id="risk" type="number" value="1">
+    Growth % per Step: <input id="growth" type="number" value="20">
+    Milestones: <input id="steps" type="number" value="15">
+    <button onclick="generate()">Generate</button>
+</div>
+
+<table id="table">
+<thead>
+<tr>
+    <th>#</th>
+    <th>Capital Range</th>
+    <th>Risk ($)</th>
+    <th>New Base</th>
+    <th>Growth</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</div>
+
+<script>
+function generate() {
+    let balance = parseFloat(document.getElementById("balance").value);
+    let riskPercent = parseFloat(document.getElementById("risk").value) / 100;
+    let growthPercent = parseFloat(document.getElementById("growth").value) / 100;
+    let steps = parseInt(document.getElementById("steps").value);
+
+    let tbody = document.querySelector("#table tbody");
+    tbody.innerHTML = "";
+
+    let current = balance;
+
+    for (let i = 1; i <= steps; i++) {
+
+        let next = current * (1 + growthPercent);
+
+        let riskAmount = current * riskPercent;
+
+        let row = `
+        <tr>
+            <td>${i}</td>
+            <td>$${current.toFixed(2)} - $${next.toFixed(2)}</td>
+            <td>$${riskAmount.toFixed(2)}</td>
+            <td>$${riskAmount.toFixed(2)}</td>
+            <td>+${(growthPercent*100).toFixed(0)}%</td>
+        </tr>
+        `;
+
+        tbody.innerHTML += row;
+
+        current = next;
+    }
+
+    saveSettings();
+}
+
+function saveSettings() {
+    localStorage.setItem("balance", document.getElementById("balance").value);
+    localStorage.setItem("risk", document.getElementById("risk").value);
+    localStorage.setItem("growth", document.getElementById("growth").value);
+    localStorage.setItem("steps", document.getElementById("steps").value);
+}
+
+function loadSettings() {
+    if(localStorage.getItem("balance")) {
+        document.getElementById("balance").value = localStorage.getItem("balance");
+        document.getElementById("risk").value = localStorage.getItem("risk");
+        document.getElementById("growth").value = localStorage.getItem("growth");
+        document.getElementById("steps").value = localStorage.getItem("steps");
+    }
+}
+
+loadSettings();
+generate();
+</script>
+
+</body>
+</html>
